@@ -1,7 +1,8 @@
-from PyQt5.QtWidgets import QLineEdit, QHBoxLayout, QPushButton, QLabel, QErrorMessage, QFileDialog
+from PyQt5.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QErrorMessage, QFileDialog, QSpacerItem, QSizePolicy
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
 
-class WallpaperRow(QHBoxLayout):
+class WallpaperRow(QGridLayout):
   def __init__(self, currentPath):
     super(WallpaperRow, self).__init__()
     self.currentPath = currentPath
@@ -9,26 +10,28 @@ class WallpaperRow(QHBoxLayout):
     self.path_edit_setup()
     self.browse_button_setup()
     self.save_button_setup()
+    self.setAlignment(Qt.AlignLeft)
     self.update_thumbnail()
 
   def thumbnail_setup(self):
     self.thumbnail = QLabel()
-    self.thumbnail.setFixedWidth(300)
-    self.addWidget(self.thumbnail)
+    self.thumbnail.setFixedSize(180, 120)
+    self.addWidget(self.thumbnail, 0, 0, 3, 1)
 
   def path_edit_setup(self):
     self.pathEdit = QLineEdit(self.currentPath)
-    self.addWidget(self.pathEdit)
+    self.pathEdit.setMaximumWidth(270)
+    self.addWidget(self.pathEdit, 0, 1)
 
   def browse_button_setup(self):
     self.browseButton = QPushButton("Browse images...")
     self.browseButton.clicked.connect(self.handle_browse)
-    self.addWidget(self.browseButton)
+    self.addWidget(self.browseButton, 1, 1)
   
   def save_button_setup(self):
     self.saveButton = QPushButton("Save changes")
     self.saveButton.clicked.connect(self.handle_save)
-    self.addWidget(self.saveButton)
+    self.addWidget(self.saveButton, 2, 1)
 
   def handle_browse(self):
     fileDialog = QFileDialog()
@@ -55,7 +58,7 @@ class WallpaperRow(QHBoxLayout):
     else:
       aspectRatio = pixmap.size().width() / pixmap.size().height()
       if aspectRatio > 1.5:
-        scaledPixmap = pixmap.scaledToWidth(300)
+        scaledPixmap = pixmap.scaledToWidth(self.thumbnail.size().width())
       else:
-        scaledPixmap = pixmap.scaledToHeight(200)
+        scaledPixmap = pixmap.scaledToHeight(self.thumbnail.size().height())
       self.thumbnail.setPixmap(scaledPixmap)

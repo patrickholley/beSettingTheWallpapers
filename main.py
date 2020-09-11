@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
     self.show()
 
   def window_setup(self):
-    self.setGeometry(0, 0, 1000, 750)
+    self.setGeometry(0, 0, 450, 150)
     desktopRectangle = self.frameGeometry()
     desktopCenter = QDesktopWidget().availableGeometry().center()
     desktopRectangle.moveCenter(desktopCenter)
