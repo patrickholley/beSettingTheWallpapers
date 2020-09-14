@@ -1,37 +1,37 @@
-from PyQt5.QtWidgets import QLineEdit, QGridLayout, QPushButton, QLabel, QErrorMessage, QFileDialog, QSpacerItem, QSizePolicy
+from PyQt5.QtWidgets import QLineEdit, QVBoxLayout, QPushButton, QLabel, QErrorMessage, QFileDialog, QSpacerItem, QSizePolicy
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
+from settings_service import settingsList, save_settings
 
-class WallpaperRow(QGridLayout):
-  def __init__(self, currentPath):
+class WallpaperRow(QVBoxLayout):
+  def __init__(self, row, isDefaultSetting = False):
     super(WallpaperRow, self).__init__()
-    self.currentPath = currentPath
+    self.setAlignment(Qt.AlignTop)
+    self.column = 3 if isDefaultSetting else 1
+    self.row = row
+    self.isDefaultSetting = isDefaultSetting
     self.thumbnail_setup()
-    self.path_edit_setup()
+    self.label_setup()
     self.browse_button_setup()
-    self.save_button_setup()
-    self.setAlignment(Qt.AlignLeft)
     self.update_thumbnail()
 
   def thumbnail_setup(self):
     self.thumbnail = QLabel()
-    self.thumbnail.setFixedSize(180, 120)
-    self.addWidget(self.thumbnail, 0, 0, 3, 1)
-
-  def path_edit_setup(self):
-    self.pathEdit = QLineEdit(self.currentPath)
-    self.pathEdit.setMaximumWidth(270)
-    self.addWidget(self.pathEdit, 0, 1)
+    self.thumbnail.setFixedSize(300, 169)
+    self.thumbnail.setStyleSheet("border: 1px solid black;")
+    self.addWidget(self.thumbnail)
+  
+  def label_setup(self):
+    self.label = QLabel(settingsList[self.row][self.column - 1])
+    self.label.setAlignment(Qt.AlignCenter)
+    self.label.setFixedWidth(300)
+    self.addWidget(self.label)
 
   def browse_button_setup(self):
     self.browseButton = QPushButton("Browse images...")
     self.browseButton.clicked.connect(self.handle_browse)
-    self.addWidget(self.browseButton, 1, 1)
-  
-  def save_button_setup(self):
-    self.saveButton = QPushButton("Save changes")
-    self.saveButton.clicked.connect(self.handle_save)
-    self.addWidget(self.saveButton, 2, 1)
+    self.browseButton.setFixedWidth(300)
+    self.addWidget(self.browseButton)
 
   def handle_browse(self):
     fileDialog = QFileDialog()
@@ -40,20 +40,15 @@ class WallpaperRow(QGridLayout):
     fileDialog.setDirectory("/hdd/Wallpapers")
     fileDialog.setWindowTitle("Select an Image")
     if fileDialog.exec():
-      self.currentPath = (fileDialog.selectedFiles()[0])
+      settingsList[self.row][self.column] = (fileDialog.selectedFiles()[0])
       self.update_thumbnail()
-
-  def handle_save(self):
-    self.currentPath = self.pathEdit.text()
-    self.update_thumbnail()
-    
+      save_settings()
 
   def update_thumbnail(self):
-    self.pathEdit.setText(self.currentPath)
-    pixmap = QPixmap(self.currentPath)
+    pixmap = QPixmap(settingsList[self.row][self.column])
     if pixmap.isNull():
       errorDialog = QErrorMessage()
-      errorDialog.showMessage(f"Image at path {self.currentPath} could not be found.")
+      errorDialog.showMessage(f"Image at path {settingsList[self.row][self.column]} could not be found.")
       errorDialog.exec_()
     else:
       aspectRatio = pixmap.size().width() / pixmap.size().height()
