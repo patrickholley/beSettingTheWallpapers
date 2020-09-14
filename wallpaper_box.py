@@ -1,11 +1,11 @@
-from PyQt5.QtWidgets import QLineEdit, QVBoxLayout, QPushButton, QLabel, QErrorMessage, QFileDialog, QSpacerItem, QSizePolicy
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt
+from PySide2.QtWidgets import QLineEdit, QVBoxLayout, QPushButton, QLabel, QErrorMessage, QFileDialog, QSpacerItem, QSizePolicy
+from PySide2.QtGui import QPixmap
+from PySide2.QtCore import Qt
 from settings_service import settingsList, save_settings
 
-class WallpaperRow(QVBoxLayout):
+class WallpaperBox(QVBoxLayout):
   def __init__(self, row, isDefaultSetting = False):
-    super(WallpaperRow, self).__init__()
+    super(WallpaperBox, self).__init__()
     self.setAlignment(Qt.AlignTop)
     self.column = 3 if isDefaultSetting else 1
     self.row = row
@@ -17,7 +17,7 @@ class WallpaperRow(QVBoxLayout):
 
   def thumbnail_setup(self):
     self.thumbnail = QLabel()
-    self.thumbnail.setFixedSize(300, 169)
+    self.thumbnail.setFixedSize(300, 169) # see if width can be applied to layout
     self.thumbnail.setStyleSheet("border: 1px solid black;")
     self.addWidget(self.thumbnail)
   
