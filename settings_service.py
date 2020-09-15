@@ -3,13 +3,20 @@ import os
 
 settingsPath = "settings.csv"
 
-csvFile = open(settingsPath)
-settingsList = list(csv.reader(csvFile))
-csvFile.close()
+settingsList = list()
 
-def save_settings():
+def read_settings_list():
+  global settingsList
+  csvFile = open(settingsPath)
+  settingsList = list(csv.reader(csvFile))
+  csvFile.close()
+
+def save_settings(settingsListToSave):
   tempSettingsPath = "tempSettings.csv"
   tempCsvFile = open(tempSettingsPath, "w")
-  csv.writer(tempCsvFile).writerows(settingsList)
+  csv.writer(tempCsvFile).writerows(settingsListToSave)
   tempCsvFile.close()
   os.rename(tempSettingsPath, settingsPath)
+  read_settings_list()
+
+read_settings_list()
