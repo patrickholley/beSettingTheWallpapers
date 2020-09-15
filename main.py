@@ -1,6 +1,6 @@
 import sys
 
-from PySide2.QtWidgets import QStyle, QMainWindow, QDesktopWidget, QApplication, QWidget, QHBoxLayout, QGridLayout, QVBoxLayout
+from PySide2.QtWidgets import QStyle, QMainWindow, QApplication, QWidget, QHBoxLayout, QGridLayout, QVBoxLayout
 from PySide2.QtGui import QIcon, QGuiApplication
 from PySide2.QtCore import Qt
 from wallpaper_box import WallpaperBox
@@ -26,7 +26,7 @@ class MainWindow(QMainWindow):
       )
     )
     self.setWindowTitle("Be Setting the Wallpapers")
-    self.setWindowIcon(QIcon('app_icon.png'))
+    self.setWindowIcon(QIcon('assets/app_icon.png'))
 
   def central_widget_setup(self):
     self.centralWidget = QWidget()
@@ -50,9 +50,6 @@ class MainWindow(QMainWindow):
     
     self.mainLayout.addLayout(self.applicationGrid)
 
-def run():
-  app = QApplication(sys.argv)
-  mainWindow = MainWindow()
-  sys.exit(app.exec_())
-
-run()
+app = QApplication(sys.argv)
+mainWindow = MainWindow()
+sys.exit(app.exec_())
