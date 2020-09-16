@@ -4,18 +4,22 @@ from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt
 
 def update_thumbnail(self):
-  pixmap = QPixmap(self.path)
-  if pixmap.isNull():
-    errorDialog = QErrorMessage()
-    errorDialog.showMessage(f"Image at path {self.path} could not be found.")
-    errorDialog.exec_()
-  else:
-    aspectRatio = pixmap.size().width() / pixmap.size().height()
-    if aspectRatio > 1.78:
-      scaledPixmap = pixmap.scaledToWidth(self.thumbnail.size().width())
+  if self.path != "":
+    pixmap = QPixmap(self.path)
+    if pixmap.isNull():
+      errorDialog = QMessageBox.critical(
+        self,
+        "Invalid Image",
+        f"Image at path {self.path} could not be found.",
+        QMessageBox.StandardButton.Close
+      )
     else:
-      scaledPixmap = pixmap.scaledToHeight(self.thumbnail.size().height())
-    self.thumbnail.setPixmap(scaledPixmap)
+      aspectRatio = pixmap.size().width() / pixmap.size().height()
+      if aspectRatio > 1.78:
+        scaledPixmap = pixmap.scaledToWidth(self.thumbnail.size().width())
+      else:
+        scaledPixmap = pixmap.scaledToHeight(self.thumbnail.size().height())
+      self.thumbnail.setPixmap(scaledPixmap)
 
 class EditWallpaperDialog(QDialog):
   def __init__(self, parent):
@@ -116,6 +120,15 @@ class EditWallpaperDialog(QDialog):
     handleSaveArgs = [self.path]
     if not self.parent.isDefaultSetting:
       handleSaveArgs.extend([self.applicationEdit.text(), self.processEdit.text()])
-    self.parent.handle_save(*handleSaveArgs)
-    self.isSaved = True
-    self.close()
+    someArgIsInvalid = any(arg == "" for arg in handleSaveArgs)
+    if someArgIsInvalid:
+      errorDialog = QMessageBox.critical(
+        self,
+        "Missing Fields",
+        "Cannot save with any field missing.",
+        QMessageBox.StandardButton.Close
+      )
+    else:
+      self.parent.handle_save(*handleSaveArgs)
+      self.isSaved = True
+      self.close()
