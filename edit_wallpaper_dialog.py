@@ -1,13 +1,13 @@
+from pathlib import Path
 from PySide2.QtWidgets import QDialog, QVBoxLayout, QPushButton, QFileDialog, QLabel, QLineEdit, QHBoxLayout, QMessageBox
 from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt
-from settings_service import settingsList, save_settings
 
-def update_thumbnail(self, row, pathColumn):
-  pixmap = QPixmap(settingsList[row][pathColumn])
+def update_thumbnail(self):
+  pixmap = QPixmap(self.path)
   if pixmap.isNull():
     errorDialog = QErrorMessage()
-    errorDialog.showMessage(f"Image at path {settingsList[row][pathColumn]} could not be found.")
+    errorDialog.showMessage(f"Image at path {self.path} could not be found.")
     errorDialog.exec_()
   else:
     aspectRatio = pixmap.size().width() / pixmap.size().height()
@@ -18,20 +18,20 @@ def update_thumbnail(self, row, pathColumn):
     self.thumbnail.setPixmap(scaledPixmap)
 
 class EditWallpaperDialog(QDialog):
-  def __init__(self, row, parent):
+  def __init__(self, parent):
     super(EditWallpaperDialog, self).__init__()
     self.setWindowTitle("Edit Wallpaper")
     self.isSaved = False
     self.parent = parent
+    self.path = self.parent.path
     self.layout = QVBoxLayout()
-    self.settingsList = settingsList.copy()
     self.setLayout(self.layout)
     self.thumbnail_setup()
     self.application_edit_setup()
     if not self.parent.isDefaultSetting:
       self.process_edit_setup()
     self.select_image_button_setup()
-    self.save_button_setup()
+    self.save_and_cancel_buttons_setup()
     self.adjustSize()
     self.setFixedSize(self.size())
 
@@ -53,15 +53,15 @@ class EditWallpaperDialog(QDialog):
       else:
         event.ignore()
 
-    self.isSaved = False
-
   def application_edit_setup(self):
+    applicationValue = self.parent.application
     self.applicationLayout = QHBoxLayout()
-    self.application = QLabel("Application:")
+    self.applicationLayout.setAlignment(Qt.AlignCenter)
+    self.application = QLabel(applicationValue if self.parent.isDefaultSetting else "Application:")
     self.applicationLayout.addWidget(self.application)
     if not self.parent.isDefaultSetting:
       self.applicationEdit = QLineEdit()
-      self.applicationEdit.setText(settingsList[self.parent.row][self.parent.applicationColumn])
+      self.applicationEdit.setText(applicationValue)
       self.applicationEdit.setFixedWidth(350)
       self.applicationLayout.addWidget(self.applicationEdit)
     self.layout.addLayout(self.applicationLayout)
@@ -71,7 +71,7 @@ class EditWallpaperDialog(QDialog):
     self.processLabel = QLabel("Process Name:")
     self.processLayout.addWidget(self.processLabel)
     self.processEdit = QLineEdit()
-    self.processEdit.setText(settingsList[self.parent.row][self.parent.processColumn])
+    self.processEdit.setText(self.parent.process)
     self.processEdit.setFixedWidth(350)
     self.processLayout.addWidget(self.processEdit)
     self.layout.addLayout(self.processLayout)
@@ -81,30 +81,41 @@ class EditWallpaperDialog(QDialog):
     self.thumbnail.setFixedSize(500, 282)
     self.thumbnail.setStyleSheet("background-color: black; border: 1px solid black;")
     self.thumbnail.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-    update_thumbnail(self, self.parent.row, self.parent.pathColumn)
+    update_thumbnail(self)
     self.layout.addWidget(self.thumbnail)
   
   def select_image_button_setup(self):
     self.selectButton = QPushButton("Select Image...")
+    self.selectButton.setIcon(QIcon("assets/image.svg"))
     self.selectButton.clicked.connect(self.handle_select)
     self.layout.addWidget(self.selectButton)
 
-  def save_button_setup(self):
+  def save_and_cancel_buttons_setup(self):
+    buttonsLayout = QHBoxLayout()
     self.saveButton = QPushButton("Save Changes")
+    self.saveButton.setIcon(QIcon("assets/save.svg"))
     self.saveButton.clicked.connect(self.handle_save)
-    self.layout.addWidget(self.saveButton)
+    buttonsLayout.addWidget(self.saveButton)
+    self.cancelButton = QPushButton("Cancel")
+    self.cancelButton.setIcon(QIcon("assets/cancel.svg"))
+    self.cancelButton.clicked.connect(self.close)
+    buttonsLayout.addWidget(self.cancelButton)
+    self.layout.addLayout(buttonsLayout)
 
   def handle_select(self):
     fileDialog = QFileDialog()
     fileDialog.setFileMode(QFileDialog.ExistingFile)
     fileDialog.setNameFilter("Images (*.png *.xpm *.jpg *.jpeg)")
-    fileDialog.setDirectory("/hdd/Wallpapers")
+    fileDialog.setDirectory(f"{str(Path.home())}/Pictures")
     fileDialog.setWindowTitle("Select an Image")
-    if fileDialog.exec():
-      self.settingsList[self.parent.row][self.parent.pathColumn] = (fileDialog.selectedFiles()[0])
-      update_thumbnail(self, self.parent.row, self.parent.pathColumn)
+    if fileDialog.exec_():
+      self.path = fileDialog.selectedFiles()[0]
+      update_thumbnail(self)
 
   def handle_save(self):
-    save_settings(self.settingsList)
+    handleSaveArgs = [self.path]
+    if not self.parent.isDefaultSetting:
+      handleSaveArgs.extend([self.applicationEdit.text(), self.processEdit.text()])
+    self.parent.handle_save(*handleSaveArgs)
     self.isSaved = True
     self.close()

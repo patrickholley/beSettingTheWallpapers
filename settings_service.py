@@ -11,10 +11,11 @@ def read_settings_list():
   settingsList = list(csv.reader(csvFile))
   csvFile.close()
 
-def save_settings(settingsListToSave):
+def save_settings():
+  global settingsList
   tempSettingsPath = "tempSettings.csv"
   tempCsvFile = open(tempSettingsPath, "w")
-  csv.writer(tempCsvFile).writerows(settingsListToSave)
+  csv.writer(tempCsvFile).writerows(settingsList)
   tempCsvFile.close()
   os.rename(tempSettingsPath, settingsPath)
   read_settings_list()

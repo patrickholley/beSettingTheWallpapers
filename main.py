@@ -1,16 +1,19 @@
 import sys
 
-from PySide2.QtWidgets import QStyle, QMainWindow, QApplication, QWidget, QHBoxLayout, QGridLayout, QVBoxLayout
+from PySide2.QtWidgets import QStyle, QMainWindow, QApplication, QWidget, QHBoxLayout, QGridLayout, QVBoxLayout, QPushButton
 from PySide2.QtGui import QIcon, QGuiApplication
 from PySide2.QtCore import Qt
 from wallpaper_box import WallpaperBox
 from settings_service import settingsList
+from add_application_button import AddApplicationButton
 
 class MainWindow(QMainWindow):
   def __init__(self):
     super(MainWindow, self).__init__()
     self.central_widget_setup()
     self.default_vbox_setup()
+    self.addApplicationButton = AddApplicationButton()
+    self.mainLayout.addWidget(self.addApplicationButton, alignment = Qt.AlignCenter)
     self.application_grid_setup()
     self.window_setup()
     self.show()
