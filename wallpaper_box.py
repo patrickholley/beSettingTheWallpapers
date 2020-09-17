@@ -1,23 +1,26 @@
 from PySide2.QtWidgets import QVBoxLayout, QPushButton, QLabel, QErrorMessage, QFileDialog, QHBoxLayout, QWidget
 from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt, QSize
-from settings_service import settingsList, save_settings
+from settings_service import applicationSettings, defaultSettings
 from edit_wallpaper_dialog import EditWallpaperDialog, update_thumbnail
+from utils import clear_layout
 
-class WallpaperBox(QVBoxLayout):
+class WallpaperBox(QWidget):
   def __init__(self, rowIndex, isDefaultSetting = False):
     super(WallpaperBox, self).__init__()
-    self.setAlignment(Qt.AlignTop)
-    baseColumn = 3 if isDefaultSetting else 0
+    self.layout = QVBoxLayout()
+    self.layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
+    self.setLayout(self.layout)
     self.isDefaultSetting = isDefaultSetting
+    self.settings = defaultSettings if self.isDefaultSetting else applicationSettings
     self.rowIndex = rowIndex
-    self.row = settingsList[rowIndex]
-    self.pathColumn = baseColumn + 1
-    self.path = self.row[self.pathColumn]
-    self.applicationColumn = baseColumn
+    self.row = self.settings.list[rowIndex]
+    self.applicationColumn = 0
     self.application = self.row[self.applicationColumn]
+    self.pathColumn = 1
+    self.path = self.row[self.pathColumn]
     if not self.isDefaultSetting:
-      self.processColumn = baseColumn + 2
+      self.processColumn = 2
       self.process = self.row[self.processColumn]
     self.thumbnail_setup()
     self.label_row_setup()
@@ -28,7 +31,7 @@ class WallpaperBox(QVBoxLayout):
     self.thumbnail.setStyleSheet("background-color: black; border: 1px solid black;")
     self.thumbnail.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
     update_thumbnail(self)
-    self.addWidget(self.thumbnail)
+    self.layout.addWidget(self.thumbnail)
   
   def label_row_setup(self):
     self.labelRow = QHBoxLayout()
@@ -40,7 +43,7 @@ class WallpaperBox(QVBoxLayout):
     labelRowWrapper = QWidget()
     labelRowWrapper.setLayout(self.labelRow)
     labelRowWrapper.setFixedWidth(300)
-    self.addWidget(labelRowWrapper)
+    self.layout.addWidget(labelRowWrapper)
 
   def button_setup(self, iconPath, handle_click):
     button = QPushButton("")
@@ -50,7 +53,8 @@ class WallpaperBox(QVBoxLayout):
     self.labelRow.addWidget(button)
 
   def handle_delete(self):
-    print("Will delete")
+    self.settings.list.pop(self.rowIndex)
+    self.settings.write()
 
   def handle_edit(self):
     self.editWallpaperDialog = EditWallpaperDialog(self)
@@ -60,10 +64,10 @@ class WallpaperBox(QVBoxLayout):
     if not self.isDefaultSetting:
       self.application = application
       self.label.setText(self.application)
-      settingsList[self.rowIndex][self.applicationColumn] = self.application
+      self.settings.list[self.rowIndex][self.applicationColumn] = self.application
       self.process = process
-      settingsList[self.rowIndex][self.processColumn] = self.process
+      self.settings.list[self.rowIndex][self.processColumn] = self.process
     self.path = path
     update_thumbnail(self)
-    settingsList[self.rowIndex][self.pathColumn] = self.path
-    save_settings()
+    self.settings.list[self.rowIndex][self.pathColumn] = self.path
+    self.settings.write()

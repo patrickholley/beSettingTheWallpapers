@@ -7,11 +7,12 @@ def update_thumbnail(self):
   if self.path != "":
     pixmap = QPixmap(self.path)
     if pixmap.isNull():
-      errorDialog = QMessageBox.critical(
-        self,
+      criticalMessageBox = QMessageBox()
+      criticalMessageBox.critical(
+        None,
         "Invalid Image",
         f"Image at path {self.path} could not be found.",
-        QMessageBox.StandardButton.Close
+        criticalMessageBox.Close
       )
     else:
       aspectRatio = pixmap.size().width() / pixmap.size().height()
@@ -43,16 +44,16 @@ class EditWallpaperDialog(QDialog):
     if self.isSaved:
       event.accept()
     else:
-      messageBox = QMessageBox()
-      confirmClose = messageBox.question(
+      confirmMessageBox = QMessageBox()
+      confirmClose = confirmMessageBox.question(
         self,
         "Confirm Cancel",
         "Any changes made will not be saved. Cancel anyways?",
-        messageBox.No,
-        messageBox.Yes
+        confirmMessageBox.No,
+        confirmMessageBox.Yes
       )
 
-      if confirmClose == messageBox.Yes:
+      if confirmClose == confirmMessageBox.Yes:
         event.accept()
       else:
         event.ignore()
@@ -124,8 +125,8 @@ class EditWallpaperDialog(QDialog):
     if someArgIsInvalid:
       errorDialog = QMessageBox.critical(
         self,
-        "Missing Fields",
-        "Cannot save with any field missing.",
+        "Empty Fields",
+        "Cannot save with any field empty.",
         QMessageBox.StandardButton.Close
       )
     else:

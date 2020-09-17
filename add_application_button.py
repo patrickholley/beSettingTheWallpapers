@@ -1,10 +1,12 @@
 from PySide2.QtWidgets import QPushButton
 from PySide2.QtGui import QIcon
 from edit_wallpaper_dialog import EditWallpaperDialog
+from settings_service import applicationSettings
 
 class AddApplicationButton(QPushButton):
-  def __init__(self):
+  def __init__(self, parent):
     super(AddApplicationButton, self).__init__()
+    self.parent = parent
     self.isDefaultSetting = False
     self.setText("Add Application")
     self.setIcon(QIcon("assets/add.svg"))
@@ -19,4 +21,7 @@ class AddApplicationButton(QPushButton):
     self.editWallpaperDialog.show()
 
   def handle_save(self, path, application, process):
-    print(path, application, process)
+    applicationSettings.list.append([application, path, process])
+    applicationSettings.write()
+    self.parent.application_grid_setup()
+    self.close()

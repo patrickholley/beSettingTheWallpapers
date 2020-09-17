@@ -1,23 +1,23 @@
 import csv
 import os
 
-settingsPath = "settings.csv"
+class Settings:
+  def __init__(self, path):
+    self.path = path
+    self.read()
 
-settingsList = list()
+  def read(self):
+    csvFile = open(self.path)
+    self.list = list(csv.reader(csvFile))
+    csvFile.close()
 
-def read_settings_list():
-  global settingsList
-  csvFile = open(settingsPath)
-  settingsList = list(csv.reader(csvFile))
-  csvFile.close()
+  def write(self):
+    tempPath = "tempSettings.csv"
+    tempCsvFile = open(tempPath, "w")
+    csv.writer(tempCsvFile).writerows(self.list)
+    tempCsvFile.close()
+    os.rename(tempPath, self.path)
+    self.read()
 
-def save_settings():
-  global settingsList
-  tempSettingsPath = "tempSettings.csv"
-  tempCsvFile = open(tempSettingsPath, "w")
-  csv.writer(tempCsvFile).writerows(settingsList)
-  tempCsvFile.close()
-  os.rename(tempSettingsPath, settingsPath)
-  read_settings_list()
-
-read_settings_list()
+applicationSettings = Settings("applicationSettings.csv")
+defaultSettings = Settings("defaultSettings.csv")
