@@ -1,1 +1,2 @@
-settings.csv
+*.csv
+__pycache__

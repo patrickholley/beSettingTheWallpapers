@@ -55,12 +55,18 @@ class MainWindow(QMainWindow):
       self.applicationBoxes.append(WallpaperBox(i))
 
   def application_grid_setup(self):
+    for i in reversed(range(0, self.applicationGrid.count())):
+      layout = self.applicationGrid.takeAt(i).layout()
+      for j in reversed(range(0, layout.count())):
+        widget = layout.takeAt(j).widget()
+        widget.hide()
     for i in range(0, len(self.applicationBoxes)):
       r = math.floor((i) / 4)
       c = i % 4
       if c == 0:
         self.applicationGrid.addLayout(QHBoxLayout())
       layout = self.applicationGrid.itemAt(r).layout()
+      self.applicationBoxes[i].show()
       layout.addWidget(self.applicationBoxes[i])
     
 app = QApplication(sys.argv)

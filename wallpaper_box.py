@@ -6,15 +6,15 @@ from edit_wallpaper_dialog import EditWallpaperDialog, update_thumbnail
 from utils import clear_layout
 
 class WallpaperBox(QWidget):
-  def __init__(self, rowIndex, isDefaultSetting = False):
+  def __init__(self, index, isDefaultSetting = False):
     super(WallpaperBox, self).__init__()
     self.layout = QVBoxLayout()
     self.layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
     self.setLayout(self.layout)
     self.isDefaultSetting = isDefaultSetting
     self.settings = defaultSettings if self.isDefaultSetting else applicationSettings
-    self.rowIndex = rowIndex
-    self.row = self.settings.list[rowIndex]
+    self.index = index
+    self.row = self.settings.list[index]
     self.applicationColumn = 0
     self.application = self.row[self.applicationColumn]
     self.pathColumn = 1
@@ -53,7 +53,7 @@ class WallpaperBox(QWidget):
     self.labelRow.addWidget(button)
 
   def handle_delete(self):
-    self.settings.list.pop(self.rowIndex)
+    self.settings.list.pop(self.index)
     self.settings.write()
 
   def handle_edit(self):
@@ -64,10 +64,10 @@ class WallpaperBox(QWidget):
     if not self.isDefaultSetting:
       self.application = application
       self.label.setText(self.application)
-      self.settings.list[self.rowIndex][self.applicationColumn] = self.application
+      self.settings.list[self.index][self.applicationColumn] = self.application
       self.process = process
-      self.settings.list[self.rowIndex][self.processColumn] = self.process
+      self.settings.list[self.index][self.processColumn] = self.process
     self.path = path
     update_thumbnail(self)
-    self.settings.list[self.rowIndex][self.pathColumn] = self.path
+    self.settings.list[self.index][self.pathColumn] = self.path
     self.settings.write()
