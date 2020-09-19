@@ -1,13 +1,15 @@
 import sys
 import math
+import threading
 
-from PySide2.QtWidgets import QStyle, QMainWindow, QApplication, QWidget, QHBoxLayout, QGridLayout, QVBoxLayout, QPushButton, QScrollArea
+from PySide2.QtWidgets import QStyle, QMainWindow, QMenu, QApplication, QWidget, QHBoxLayout, QGridLayout, QVBoxLayout, QPushButton, QScrollArea, QSystemTrayIcon
 from PySide2.QtGui import QIcon, QGuiApplication
 from PySide2.QtCore import Qt
 from wallpaper_box import WallpaperBox
 from settings_service import applicationSettings
 from add_application_button import AddApplicationButton
 from utils import clear_layout
+from background_service import write_log
 
 class MainWindow(QMainWindow):
   def __init__(self):
@@ -20,7 +22,10 @@ class MainWindow(QMainWindow):
     self.application_grid_setup()
     self.application_scroll_setup()
     self.window_setup()
-    self.show()
+    self.trayIcon = QSystemTrayIcon(self.windowIcon(), self)
+    self.system_tray_setup()
+    self.stopped = False
+    # self.show()
 
   def window_setup(self):
     self.adjustSize()
@@ -77,7 +82,6 @@ class MainWindow(QMainWindow):
       applicationBox = self.applicationBoxes[i]
       applicationBox.set_index(i)
       applicationBox.show()
-      print(applicationBox.size())
       layout.addWidget(applicationBox)
     self.applicationGridContainer.setFixedHeight(self.applicationGrid.count() * 250)
 
@@ -87,7 +91,23 @@ class MainWindow(QMainWindow):
     self.applicationScroll.setFixedSize(1370, 510)
     self.mainLayout.addWidget(self.applicationScroll)
 
-    
+  def system_tray_setup(self):
+    app.setQuitOnLastWindowClosed(False)
+    self.systemTray = QSystemTrayIcon(QIcon("assets/app_icon.png"))
+    self.trayMenu = QMenu()
+    self.trayMenu.openAction = self.trayMenu.addAction("Open")
+    self.trayMenu.openAction.triggered.connect(self.show)
+    self.trayMenu.exitAction = self.trayMenu.addAction("Exit")
+    self.trayMenu.exitAction.triggered.connect(self.exit)
+    self.systemTray.setContextMenu(self.trayMenu)
+    self.systemTray.show()
+
+  def exit(self):
+    self.stopped = True
+    app.quit()
+
 app = QApplication(sys.argv)
 mainWindow = MainWindow()
+backgroundThread = threading.Thread(target = write_log, args=([mainWindow]))
+backgroundThread.start()
 sys.exit(app.exec_())

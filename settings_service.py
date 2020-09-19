@@ -12,7 +12,7 @@ class Settings:
     csvFile.close()
 
   def write(self):
-    tempPath = "tempSettings.csv"
+    tempPath = "settings.temp.csv"
     tempCsvFile = open(tempPath, "w")
     csv.writer(tempCsvFile).writerows(self.list)
     tempCsvFile.close()
