@@ -6,8 +6,9 @@ from edit_wallpaper_dialog import EditWallpaperDialog, update_thumbnail
 from utils import clear_layout
 
 class WallpaperBox(QWidget):
-  def __init__(self, index, isDefaultSetting = False):
+  def __init__(self, parent, index, isDefaultSetting = False):
     super(WallpaperBox, self).__init__()
+    self.parent = parent
     self.layout = QVBoxLayout()
     self.layout.setAlignment(Qt.AlignTop | Qt.AlignCenter)
     self.setLayout(self.layout)
@@ -24,6 +25,7 @@ class WallpaperBox(QWidget):
       self.process = self.row[self.processColumn]
     self.thumbnail_setup()
     self.label_row_setup()
+    self.setFixedSize(325, 250)
 
   def thumbnail_setup(self):
     self.thumbnail = QLabel()
@@ -55,6 +57,8 @@ class WallpaperBox(QWidget):
   def handle_delete(self):
     self.settings.list.pop(self.index)
     self.settings.write()
+    self.parent.applicationBoxes.pop(self.index)
+    self.parent.application_grid_arrange()
 
   def handle_edit(self):
     self.editWallpaperDialog = EditWallpaperDialog(self)
@@ -71,3 +75,6 @@ class WallpaperBox(QWidget):
     update_thumbnail(self)
     self.settings.list[self.index][self.pathColumn] = self.path
     self.settings.write()
+
+  def set_index(self, index):
+    self.index = index

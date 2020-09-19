@@ -24,6 +24,5 @@ class AddApplicationButton(QPushButton):
   def handle_save(self, path, application, process):
     applicationSettings.list.append([application, path, process])
     applicationSettings.write()
-    self.parent.applicationBoxes.append(WallpaperBox(len(applicationSettings.list) - 1))
-    self.parent.application_grid_setup()
-    self.close()
+    self.parent.applicationBoxes.append(WallpaperBox(self.parent, len(applicationSettings.list) - 1))
+    self.parent.application_grid_arrange()
