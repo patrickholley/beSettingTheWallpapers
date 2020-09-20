@@ -1,2 +1,3 @@
 *.csv
+*.pid
 __pycache__

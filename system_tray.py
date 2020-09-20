@@ -16,6 +16,7 @@ class SystemTray(QSystemTrayIcon):
   def menu_title_setup(self):
     self.trayMenu.menuTitle = self.trayMenu.addAction("SaharahPaper")
     self.trayMenu.menuTitle.setEnabled(False)
+    self.trayMenu.addSeparator()
 
   def open_action_setup(self):
     self.trayMenu.openAction = self.trayMenu.addAction("Open Settings . . .")

@@ -1,28 +1,35 @@
+import os
+import fcntl
 import sys
 import threading
-from PySide2.QtWidgets import QApplication
-from system_tray import SystemTray
-from main_window import MainWindow
 from background_service import write_log
+from application import Application, pidFilePath
 
-class Application(QApplication):
-  def __init__(self, *args):
-    super(Application, self).__init__(*args)
-    self.stopped = False
-    self.setQuitOnLastWindowClosed(False)
-    self.systemTray = SystemTray(self)
+def write_pid():
+  pidFile = open(pidFilePath, "w")
+  print(os.getpid())
+  pidFile.write(str(os.getpid()))
+  pidFile.close()
 
-  def open_main_window(self):
-    self.mainWindow = MainWindow(self)
-
-  def quit(self):
-    self.stopped = True
-    super(Application, self).quit()
+def is_already_running():
+  try:
+    pidFile = open(pidFilePath, "r+")
+    fcntl.lockf(pidFile, fcntl.LOCK_EX)
+    pid = int(pidFile.read())
+    pidFile.close()
+    return True if os.kill(pid, 0) is None else False
+  except Exception as e:
+    return False
 
 def main():
+  write_pid()
   app = Application(sys.argv)
   backgroundThread = threading.Thread(target = write_log, args=([app]))
   backgroundThread.start()
   sys.exit(app.exec_())
 
-if __name__ == "__main__":main()
+if __name__ == "__main__":
+  if is_already_running():
+    print("already active")
+  else:
+    main()
