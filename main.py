@@ -1,113 +1,28 @@
 import sys
-import math
 import threading
-
-from PySide2.QtWidgets import QStyle, QMainWindow, QMenu, QApplication, QWidget, QHBoxLayout, QGridLayout, QVBoxLayout, QPushButton, QScrollArea, QSystemTrayIcon
-from PySide2.QtGui import QIcon, QGuiApplication
-from PySide2.QtCore import Qt
-from wallpaper_box import WallpaperBox
-from settings_service import applicationSettings
-from add_application_button import AddApplicationButton
-from utils import clear_layout
+from PySide2.QtWidgets import QApplication
+from system_tray import SystemTray
+from main_window import MainWindow
 from background_service import write_log
 
-class MainWindow(QMainWindow):
-  def __init__(self):
-    super(MainWindow, self).__init__()
-    self.central_widget_setup()
-    self.default_vbox_setup()
-    self.addApplicationButton = AddApplicationButton(self)
-    self.mainLayout.addWidget(self.addApplicationButton, alignment = Qt.AlignCenter)
-    self.application_boxes_setup()
-    self.application_grid_setup()
-    self.application_scroll_setup()
-    self.window_setup()
-    self.trayIcon = QSystemTrayIcon(self.windowIcon(), self)
-    self.system_tray_setup()
+class Application(QApplication):
+  def __init__(self, *args):
+    super(Application, self).__init__(*args)
     self.stopped = False
-    # self.show()
+    self.setQuitOnLastWindowClosed(False)
+    self.systemTray = SystemTray(self)
 
-  def window_setup(self):
-    self.adjustSize()
-    self.setGeometry(
-      QStyle.alignedRect(
-        Qt.LeftToRight,
-        Qt.AlignCenter,
-        self.size(),
-        QGuiApplication.primaryScreen().availableGeometry(),
-      )
-    )
-    self.setWindowTitle("Be Setting the Wallpapers")
-    self.setWindowIcon(QIcon('assets/app_icon.png'))
+  def open_main_window(self):
+    self.mainWindow = MainWindow(self)
 
-  def central_widget_setup(self):
-    self.centralWidget = QWidget()
-    self.setCentralWidget(self.centralWidget)
-    self.mainLayout = QVBoxLayout()
-    self.mainLayout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
-    self.centralWidget.setLayout(self.mainLayout)
-
-  def default_vbox_setup(self):
-    self.defaultVBox = QHBoxLayout()
-    self.defaultVBox.addWidget(WallpaperBox(self, 0, True))
-    self.defaultVBox.addWidget(WallpaperBox(self, 1, True))
-    self.mainLayout.addLayout(self.defaultVBox)
-
-  def application_boxes_setup(self):
-    self.applicationBoxes = list()
-    for i in range(0, len(applicationSettings.list)):
-      self.applicationBoxes.append(WallpaperBox(self, i))
-
-  def application_grid_setup(self):
-    self.applicationGrid = QVBoxLayout()
-    self.applicationGridContainer = QWidget()
-    self.applicationGridContainer.setLayout(self.applicationGrid)
-    self.applicationGridContainer.setFixedWidth(1340)
-    self.application_grid_arrange()
-
-  def application_grid_arrange(self):
-    for i in reversed(range(0, self.applicationGrid.count())):
-      layout = self.applicationGrid.takeAt(i).layout()
-      for j in reversed(range(0, layout.count())):
-        widget = layout.takeAt(j).widget()
-        widget.hide()
-    for i in range(0, len(self.applicationBoxes)):
-      r = math.floor((i) / 4)
-      c = i % 4
-      if c == 0:
-        layout = QHBoxLayout()
-        layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-        self.applicationGrid.addLayout(layout)
-      layout = self.applicationGrid.itemAt(r).layout()
-      applicationBox = self.applicationBoxes[i]
-      applicationBox.set_index(i)
-      applicationBox.show()
-      layout.addWidget(applicationBox)
-    self.applicationGridContainer.setFixedHeight(self.applicationGrid.count() * 250)
-
-  def application_scroll_setup(self):
-    self.applicationScroll = QScrollArea()
-    self.applicationScroll.setWidget(self.applicationGridContainer)
-    self.applicationScroll.setFixedSize(1370, 510)
-    self.mainLayout.addWidget(self.applicationScroll)
-
-  def system_tray_setup(self):
-    app.setQuitOnLastWindowClosed(False)
-    self.systemTray = QSystemTrayIcon(QIcon("assets/app_icon.png"))
-    self.trayMenu = QMenu()
-    self.trayMenu.openAction = self.trayMenu.addAction("Open")
-    self.trayMenu.openAction.triggered.connect(self.show)
-    self.trayMenu.exitAction = self.trayMenu.addAction("Exit")
-    self.trayMenu.exitAction.triggered.connect(self.exit)
-    self.systemTray.setContextMenu(self.trayMenu)
-    self.systemTray.show()
-
-  def exit(self):
+  def quit(self):
     self.stopped = True
-    app.quit()
+    super(Application, self).quit()
 
-app = QApplication(sys.argv)
-mainWindow = MainWindow()
-backgroundThread = threading.Thread(target = write_log, args=([mainWindow]))
-backgroundThread.start()
-sys.exit(app.exec_())
+def main():
+  app = Application(sys.argv)
+  backgroundThread = threading.Thread(target = write_log, args=([app]))
+  backgroundThread.start()
+  sys.exit(app.exec_())
+
+if __name__ == "__main__":main()
