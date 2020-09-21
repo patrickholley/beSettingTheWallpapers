@@ -1,5 +1,5 @@
 import math
-
+import sys
 from PySide2.QtWidgets import QStyle, QMainWindow, QMenu, QWidget, QHBoxLayout, QVBoxLayout, QScrollArea
 from PySide2.QtGui import QIcon, QGuiApplication
 from PySide2.QtCore import Qt
@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
       )
     )
     self.setWindowTitle("Be Setting the Wallpapers")
-    self.setWindowIcon(QIcon('assets/app_icon.png'))
+    self.setWindowIcon(QIcon(f"{sys.argv[0]}/assets/app_icon.png"))
 
   def central_widget_setup(self):
     self.centralWidget = QWidget()

@@ -1,3 +1,4 @@
+import sys
 from PySide2.QtWidgets import QPushButton
 from PySide2.QtGui import QIcon
 from edit_wallpaper_dialog import EditWallpaperDialog
@@ -10,7 +11,7 @@ class AddApplicationButton(QPushButton):
     self.parent = parent
     self.isDefaultSetting = False
     self.setText("Add Application")
-    self.setIcon(QIcon("assets/add.svg"))
+    self.setIcon(QIcon(f"{sys.argv[0]}/assets/add.svg"))
     self.clicked.connect(self.handle_add_application)
     self.setFixedWidth(300)
   

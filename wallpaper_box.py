@@ -1,3 +1,4 @@
+import sys
 from PySide2.QtWidgets import QVBoxLayout, QPushButton, QLabel, QErrorMessage, QFileDialog, QHBoxLayout, QWidget
 from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt, QSize
@@ -39,9 +40,9 @@ class WallpaperBox(QWidget):
     self.labelRow = QHBoxLayout()
     self.label = QLabel(self.application)
     self.labelRow.addWidget(self.label)
-    self.button_setup("assets/edit.svg", self.handle_edit)
+    self.button_setup(f"{sys.argv[0]}/assets/edit.svg", self.handle_edit)
     if not self.isDefaultSetting:
-      self.button_setup("assets/delete.svg", self.handle_delete)
+      self.button_setup(f"{sys.argv[0]}/assets/delete.svg", self.handle_delete)
     labelRowWrapper = QWidget()
     labelRowWrapper.setLayout(self.labelRow)
     labelRowWrapper.setFixedWidth(300)

@@ -1,3 +1,4 @@
+import sys
 from PySide2.QtWidgets import QSystemTrayIcon, QMenu
 from PySide2.QtGui import QIcon
 
@@ -5,7 +6,7 @@ class SystemTray(QSystemTrayIcon):
   def __init__(self, app):
     super(SystemTray, self).__init__()
     self.app = app
-    self.systemTray = QSystemTrayIcon(QIcon("assets/app_icon.png"))
+    self.systemTray = QSystemTrayIcon(QIcon(f"{sys.argv[0]}/assets/app_icon.png"))
     self.trayMenu = QMenu()
     self.systemTray.setContextMenu(self.trayMenu)
     self.menu_title_setup()
@@ -26,5 +27,5 @@ class SystemTray(QSystemTrayIcon):
     self.app.open_main_window()
 
   def exit_action_setup(self):
-    self.trayMenu.exitAction = self.trayMenu.addAction("Close")
+    self.trayMenu.exitAction = self.trayMenu.addAction("Exit")
     self.trayMenu.exitAction.triggered.connect(self.app.quit)

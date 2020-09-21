@@ -2,6 +2,7 @@ import csv
 import os
 import subprocess
 import time
+import sys
 
 def run_subprocess_command(command):
   process = subprocess.Popen(command,stdout=subprocess.PIPE, shell=True)
@@ -19,11 +20,11 @@ setActiveWallpaperCommandPrefix = f"{get_gsettings_prefix()}uri"
 setActiveWallpaperSpannedCommand = f"{get_gsettings_prefix()}options 'spanned'"
 
 pathSuffix = "Settings.csv"
-applicationSettingsPath = f"application{pathSuffix}"
-defaultSettingsPath = f"default{pathSuffix}"
-previousSettingsPath = f"previous{pathSuffix}"
-tempPreviousSettingsPath = f"tempPrevious{pathSuffix}"
-imgActive = f"{os.getcwd()}/active.png"
+applicationSettingsPath = f"{sys.argv[0]}/application{pathSuffix}"
+defaultSettingsPath = f"{sys.argv[0]}/default{pathSuffix}"
+previousSettingsPath = f"{sys.argv[0]}/previous{pathSuffix}"
+tempPreviousSettingsPath = f"{sys.argv[0]}/tempPrevious{pathSuffix}"
+imgActive = f"{sys.argv[0]}/active.png"
 
 def set_wallpaper():
   applicationSettingsFile = open(applicationSettingsPath)
@@ -49,7 +50,7 @@ def set_wallpaper():
     run_subprocess_command(f"cp {img1} {imgActive}")
   elif connected == "2":
     for i in range(0, len(applicationSettings)):
-      processCommand = get_process_command(applicationSettings[i][0])
+      processCommand = get_process_command(applicationSettings[i][2])
       matchedProcesses = run_subprocess_command(processCommand).splitlines()
       if len(matchedProcesses) > 1:
         img2 = applicationSettings[i][1]

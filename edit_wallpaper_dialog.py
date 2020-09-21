@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from PySide2.QtWidgets import QDialog, QVBoxLayout, QPushButton, QFileDialog, QLabel, QLineEdit, QHBoxLayout, QMessageBox
 from PySide2.QtGui import QPixmap, QIcon
@@ -91,18 +92,18 @@ class EditWallpaperDialog(QDialog):
   
   def select_image_button_setup(self):
     self.selectButton = QPushButton("Select Image...")
-    self.selectButton.setIcon(QIcon("assets/image.svg"))
+    self.selectButton.setIcon(QIcon(f"{sys.argv[0]}/assets/image.svg"))
     self.selectButton.clicked.connect(self.handle_select)
     self.layout.addWidget(self.selectButton)
 
   def save_and_cancel_buttons_setup(self):
     buttonsLayout = QHBoxLayout()
     self.saveButton = QPushButton("Save Changes")
-    self.saveButton.setIcon(QIcon("assets/save.svg"))
+    self.saveButton.setIcon(QIcon(f"{sys.argv[0]}/assets/save.svg"))
     self.saveButton.clicked.connect(self.handle_save)
     buttonsLayout.addWidget(self.saveButton)
     self.cancelButton = QPushButton("Cancel")
-    self.cancelButton.setIcon(QIcon("assets/cancel.svg"))
+    self.cancelButton.setIcon(QIcon(f"{sys.argv[0]}/assets/cancel.svg"))
     self.cancelButton.clicked.connect(self.close)
     buttonsLayout.addWidget(self.cancelButton)
     self.layout.addLayout(buttonsLayout)
