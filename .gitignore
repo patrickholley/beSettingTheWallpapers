@@ -1,3 +1,4 @@
 *.csv
 *.pid
 __pycache__
+active.png

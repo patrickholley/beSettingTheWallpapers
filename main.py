@@ -2,16 +2,16 @@ import os
 import fcntl
 import sys
 import threading
-from background_service import write_log
+from background_service import run_background_service
 from application import Application, pidFilePath
 
-def write_pid():
+def set_is_running():
   pidFile = open(pidFilePath, "w")
   print(os.getpid())
   pidFile.write(str(os.getpid()))
   pidFile.close()
 
-def is_already_running():
+def is_running():
   try:
     pidFile = open(pidFilePath, "r+")
     fcntl.lockf(pidFile, fcntl.LOCK_EX)
@@ -22,14 +22,14 @@ def is_already_running():
     return False
 
 def main():
-  write_pid()
+  set_is_running()
   app = Application(sys.argv)
-  backgroundThread = threading.Thread(target = write_log, args=([app]))
+  backgroundThread = threading.Thread(target = run_background_service, args=([app]))
   backgroundThread.start()
   sys.exit(app.exec_())
 
 if __name__ == "__main__":
-  if is_already_running():
+  if is_running():
     print("already active")
   else:
     main()

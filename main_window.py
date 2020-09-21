@@ -6,8 +6,8 @@ from PySide2.QtCore import Qt
 from wallpaper_box import WallpaperBox
 from settings_service import applicationSettings
 from add_application_button import AddApplicationButton
+from primary_monitor_select import PrimaryMonitorSelect
 from utils import clear_layout
-from background_service import write_log
 
 class MainWindow(QMainWindow):
   def __init__(self, app):
@@ -15,8 +15,8 @@ class MainWindow(QMainWindow):
     self.app = app
     self.central_widget_setup()
     self.default_vbox_setup()
-    self.addApplicationButton = AddApplicationButton(self)
-    self.mainLayout.addWidget(self.addApplicationButton, alignment = Qt.AlignCenter)
+    self.layout.addWidget(PrimaryMonitorSelect(self))
+    self.add_application_button_setup()
     self.application_boxes_setup()
     self.application_grid_setup()
     self.application_scroll_setup()
@@ -39,15 +39,19 @@ class MainWindow(QMainWindow):
   def central_widget_setup(self):
     self.centralWidget = QWidget()
     self.setCentralWidget(self.centralWidget)
-    self.mainLayout = QVBoxLayout()
-    self.mainLayout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
-    self.centralWidget.setLayout(self.mainLayout)
+    self.layout = QVBoxLayout()
+    self.layout.setAlignment(Qt.AlignCenter | Qt.AlignTop)
+    self.centralWidget.setLayout(self.layout)
 
   def default_vbox_setup(self):
     self.defaultVBox = QHBoxLayout()
     self.defaultVBox.addWidget(WallpaperBox(self, 0, True))
     self.defaultVBox.addWidget(WallpaperBox(self, 1, True))
-    self.mainLayout.addLayout(self.defaultVBox)
+    self.layout.addLayout(self.defaultVBox)
+
+  def add_application_button_setup(self):
+    self.addApplicationButton = AddApplicationButton(self)
+    self.layout.addWidget(self.addApplicationButton, alignment = Qt.AlignCenter)
 
   def application_boxes_setup(self):
     self.applicationBoxes = list()
@@ -85,7 +89,7 @@ class MainWindow(QMainWindow):
     self.applicationScroll = QScrollArea()
     self.applicationScroll.setWidget(self.applicationGridContainer)
     self.applicationScroll.setFixedSize(1370, 510)
-    self.mainLayout.addWidget(self.applicationScroll)
+    self.layout.addWidget(self.applicationScroll)
 
   def closeEvent(self, event):
     self.app.mainWindow = None
