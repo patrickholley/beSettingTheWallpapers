@@ -1,9 +1,10 @@
 import os
+import sys
 from PySide2.QtWidgets import QApplication
 from main_window import MainWindow
 from system_tray import SystemTray
 
-pidFilePath = "saharah.pid"
+pidFilePath = f"{sys.argv[0]}/saharah.pid"
 
 class Application(QApplication):
   def __init__(self, *args):
@@ -17,5 +18,8 @@ class Application(QApplication):
 
   def quit(self):
     self.stopped = True
-    os.remove(pidFilePath)
+    try:
+      os.remove(pidFilePath)
+    except OSError:
+      pass
     super(Application, self).quit()

@@ -15,12 +15,12 @@ class SystemTray(QSystemTrayIcon):
     self.systemTray.show()
 
   def menu_title_setup(self):
-    self.trayMenu.menuTitle = self.trayMenu.addAction("SaharahPaper")
+    self.trayMenu.menuTitle = self.trayMenu.addAction("Saharah Paper")
     self.trayMenu.menuTitle.setEnabled(False)
     self.trayMenu.addSeparator()
 
   def open_action_setup(self):
-    self.trayMenu.openAction = self.trayMenu.addAction("Open Settings . . .")
+    self.trayMenu.openAction = self.trayMenu.addAction("Settings")
     self.trayMenu.openAction.triggered.connect(self.handle_open)
     
   def handle_open(self):

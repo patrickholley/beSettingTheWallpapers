@@ -7,7 +7,6 @@ from wallpaper_box import WallpaperBox
 from settings_service import applicationSettings
 from add_application_button import AddApplicationButton
 from primary_monitor_select import PrimaryMonitorSelect
-from utils import clear_layout
 
 class MainWindow(QMainWindow):
   def __init__(self, app):
@@ -33,7 +32,7 @@ class MainWindow(QMainWindow):
         QGuiApplication.primaryScreen().availableGeometry(),
       )
     )
-    self.setWindowTitle("Be Setting the Wallpapers")
+    self.setWindowTitle("Saharah Paper")
     self.setWindowIcon(QIcon(f"{sys.argv[0]}/assets/app_icon.png"))
 
   def central_widget_setup(self):
@@ -67,18 +66,19 @@ class MainWindow(QMainWindow):
 
   def application_grid_arrange(self):
     for i in reversed(range(0, self.applicationGrid.count())):
-      layout = self.applicationGrid.takeAt(i).layout()
+      layout = self.applicationGrid.itemAt(i).layout()
       for j in reversed(range(0, layout.count())):
-        widget = layout.takeAt(j).widget()
+        widget = layout.itemAt(j).widget()
         widget.hide()
     for i in range(0, len(self.applicationBoxes)):
       r = math.floor((i) / 4)
-      c = i % 4
-      if c == 0:
+      item = self.applicationGrid.itemAt(r)
+      if item is None:
         layout = QHBoxLayout()
         layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         self.applicationGrid.addLayout(layout)
-      layout = self.applicationGrid.itemAt(r).layout()
+      else:
+        layout = item.layout()
       applicationBox = self.applicationBoxes[i]
       applicationBox.set_index(i)
       applicationBox.show()

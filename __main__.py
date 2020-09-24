@@ -2,12 +2,14 @@ import os
 import fcntl
 import sys
 import threading
+import faulthandler
 from background_service import run_background_service
 from application import Application, pidFilePath
 
+faulthandler.enable()
+
 def set_is_running():
   pidFile = open(pidFilePath, "w")
-  print(os.getpid())
   pidFile.write(str(os.getpid()))
   pidFile.close()
 
@@ -17,8 +19,9 @@ def is_running():
     fcntl.lockf(pidFile, fcntl.LOCK_EX)
     pid = int(pidFile.read())
     pidFile.close()
-    return True if os.kill(pid, 0) is None else False
-  except Exception as e:
+    os.kill(pid, 0)
+    return True
+  except Exception:
     return False
 
 def main():

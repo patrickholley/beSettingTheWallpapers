@@ -4,7 +4,6 @@ from PySide2.QtGui import QPixmap, QIcon
 from PySide2.QtCore import Qt, QSize
 from settings_service import applicationSettings, defaultSettings
 from edit_wallpaper_dialog import EditWallpaperDialog, update_thumbnail
-from utils import clear_layout
 
 class WallpaperBox(QWidget):
   def __init__(self, parent, index, isDefaultSetting = False):
