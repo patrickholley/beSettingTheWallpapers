@@ -3,11 +3,11 @@ import fcntl
 import sys
 import threading
 import faulthandler
-from background_service import run_background_service
+import subprocess
+from background_service import run_background_service, run_subprocess_command
 from application import Application, pidFilePath
 
 faulthandler.enable()
-
 
 def set_is_running():
     pidFile = open(pidFilePath, "w")
@@ -21,8 +21,7 @@ def is_running():
         fcntl.lockf(pidFile, fcntl.LOCK_EX)
         pid = int(pidFile.read())
         pidFile.close()
-        os.kill(pid, 0)
-        return True
+        return "saharah" in run_subprocess_command(f"ps -o cmd= {pid}")
     except Exception:
         return False
 
